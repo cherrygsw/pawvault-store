@@ -52,15 +52,12 @@ try {
         <h2>What kind of pet do you have?</h2>
         <div class="option-grid">
           <button class="option-card" data-key="pet" data-value="cat">
-            <span class="option-emoji" aria-hidden="true">🐱</span>
             <span class="option-label">Cat</span>
           </button>
           <button class="option-card" data-key="pet" data-value="dog">
-            <span class="option-emoji" aria-hidden="true">🐶</span>
             <span class="option-label">Dog</span>
           </button>
           <button class="option-card" data-key="pet" data-value="both">
-            <span class="option-emoji" aria-hidden="true">🐾</span>
             <span class="option-label">Both!</span>
           </button>
         </div>
@@ -71,17 +68,14 @@ try {
         <h2 id="step2-heading">How big is your pet?</h2>
         <div class="option-grid">
           <button class="option-card" data-key="size" data-value="small">
-            <span class="option-emoji" aria-hidden="true">🐣</span>
             <span class="option-label">Small</span>
             <span class="option-sub">Under 15 lbs</span>
           </button>
           <button class="option-card" data-key="size" data-value="medium">
-            <span class="option-emoji" aria-hidden="true">🐕</span>
             <span class="option-label">Medium</span>
             <span class="option-sub">15 – 50 lbs</span>
           </button>
           <button class="option-card" data-key="size" data-value="large">
-            <span class="option-emoji" aria-hidden="true">🦮</span>
             <span class="option-label">Large</span>
             <span class="option-sub">50+ lbs</span>
           </button>
@@ -93,17 +87,14 @@ try {
         <h2>How old is your pet?</h2>
         <div class="option-grid">
           <button class="option-card" data-key="age" data-value="puppy">
-            <span class="option-emoji" aria-hidden="true">🍼</span>
             <span class="option-label">Puppy / Kitten</span>
             <span class="option-sub">Under 1 year</span>
           </button>
           <button class="option-card" data-key="age" data-value="adult">
-            <span class="option-emoji" aria-hidden="true">💪</span>
             <span class="option-label">Adult</span>
             <span class="option-sub">1 – 7 years</span>
           </button>
           <button class="option-card" data-key="age" data-value="senior">
-            <span class="option-emoji" aria-hidden="true">🧘</span>
             <span class="option-label">Senior</span>
             <span class="option-sub">7+ years</span>
           </button>
@@ -115,17 +106,14 @@ try {
         <h2>How active is your pet?</h2>
         <div class="option-grid">
           <button class="option-card" data-key="activity" data-value="couch">
-            <span class="option-emoji" aria-hidden="true">🛋️</span>
             <span class="option-label">Couch potato</span>
             <span class="option-sub">Loves naps</span>
           </button>
           <button class="option-card" data-key="activity" data-value="moderate">
-            <span class="option-emoji" aria-hidden="true">🚶</span>
             <span class="option-label">Moderately active</span>
             <span class="option-sub">Daily walks</span>
           </button>
           <button class="option-card" data-key="activity" data-value="active">
-            <span class="option-emoji" aria-hidden="true">🏃</span>
             <span class="option-label">Very active</span>
             <span class="option-sub">Runs, hikes, plays</span>
           </button>
@@ -137,19 +125,15 @@ try {
         <h2>What matters most to you right now?</h2>
         <div class="option-grid option-grid--2col">
           <button class="option-card" data-key="goal" data-value="play">
-            <span class="option-emoji" aria-hidden="true">🎯</span>
             <span class="option-label">Enrichment & play</span>
           </button>
           <button class="option-card" data-key="goal" data-value="grooming">
-            <span class="option-emoji" aria-hidden="true">✨</span>
             <span class="option-label">Grooming & hygiene</span>
           </button>
           <button class="option-card" data-key="goal" data-value="travel">
-            <span class="option-emoji" aria-hidden="true">✈️</span>
             <span class="option-label">Travel & outdoors</span>
           </button>
           <button class="option-card" data-key="goal" data-value="comfort">
-            <span class="option-emoji" aria-hidden="true">💤</span>
             <span class="option-label">Comfort & wellness</span>
           </button>
         </div>
@@ -256,7 +240,7 @@ const keywordGroups: Record<string, string[]> = {
   active: ['active', 'sport', 'outdoor', 'hike', 'run'],
   play: ['toy', 'play', 'game', 'fun', 'interactive'],
   grooming: ['groom', 'brush', 'shed', 'clean', 'bath'],
-  travel: ['travel', 'portable', 'collapsible', 'carrier'],
+  travel: ['travel', 'portable', 'collapsible', 'carrier', 'water', 'hydration', 'hike', 'road trip'],
   comfort: ['comfort', 'cozy', 'soft', 'bed', 'cushion'],
 };
 
@@ -491,13 +475,15 @@ showStep(1);
     border: 1.5px solid var(--border);
     border-radius: 16px;
     padding: 24px 16px;
+    min-height: 84px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s, background 0.15s;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 6px;
     font-family: inherit;
     box-shadow: var(--shadow-sm);
   }
@@ -511,12 +497,8 @@ showStep(1);
     background: rgba(45,106,79,0.04);
     box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
   }
-  .option-emoji {
-    font-size: 2rem;
-    line-height: 1;
-  }
   .option-label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--dark);
   }
