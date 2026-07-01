@@ -1,8 +1,1092 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icons.astro';
+import { getWixProductsClient } from '../lib/wixProductsClient';
+import { resolveWixImage } from '../lib/wixImage';
+
+let featuredProducts: any[] = [];
+try {
+  const result = await getWixProductsClient().productsV3.queryProducts().limit(3).find();
+  featuredProducts = result.items || [];
+} catch (e) { featuredProducts = []; }
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="PawVault"
+  description="Premium pet accessories for cats & dogs — AI-curated and researched for quality and value."
+>
+
+  <!-- Hero -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <Icon name="sparkles" size={13} color="#2D6A4F" aria-hidden={true} />
+          <span>AI-curated pet accessories</span>
+        </div>
+        <h1>Your pet deserves<br/><em>the best.</em></h1>
+        <p class="hero-sub">Handpicked accessories for cats & dogs — researched and scored by AI before they ever reach our store.</p>
+        <div class="hero-actions">
+          <a href="/products" class="btn-primary">
+            <span>Shop now</span>
+            <Icon name="arrowRight" size={16} color="#FFF9F0" aria-hidden={true} />
+          </a>
+          <a href="/quiz" class="btn-secondary">
+            <Icon name="sparkles" size={14} color="rgba(255,249,240,0.8)" aria-hidden={true} />
+            Take the pet quiz
+          </a>
+        </div>
+        <div class="hero-stats" role="list" aria-label="Store policies">
+          <div role="listitem">
+            <strong>AI</strong>
+            <span>Curated selection</span>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div role="listitem">
+            <strong>Free</strong>
+            <span>Shipping $35+</span>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div role="listitem">
+            <strong>30-day</strong>
+            <span>Returns</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-card hero-card--1">
+          <div class="hero-card-icon">
+            <Icon name="paw" size={28} color="#2D6A4F" aria-hidden={true} />
+          </div>
+          <div>
+            <p class="hero-card-title">Laser Cat Toy</p>
+            <p class="hero-card-sub">AI-curated pick</p>
+          </div>
+        </div>
+        <div class="hero-card hero-card--2">
+          <div class="hero-card-icon">
+            <Icon name="heart" size={28} color="#C9663C" aria-hidden={true} />
+          </div>
+          <div>
+            <p class="hero-card-title">Paw Cleaner Cup</p>
+            <p class="hero-card-sub">Researched & vetted</p>
+          </div>
+        </div>
+        <div class="hero-orb"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <section class="trust-bar" aria-label="Trust signals">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <Icon name="truck" size={16} color="#2D6A4F" aria-hidden={true} />
+        <span>Free shipping over $35</span>
+      </div>
+      <div class="trust-divider" aria-hidden="true"></div>
+      <div class="trust-item">
+        <Icon name="lock" size={16} color="#2D6A4F" aria-hidden={true} />
+        <span>Secure SSL checkout</span>
+      </div>
+      <div class="trust-divider" aria-hidden="true"></div>
+      <div class="trust-item">
+        <Icon name="refresh" size={16} color="#2D6A4F" aria-hidden={true} />
+        <span>30-day hassle-free returns</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Quiz Banner -->
+  <section class="quiz-banner" aria-label="Pet Quiz">
+    <div class="quiz-banner-inner">
+      <div class="quiz-banner-left">
+        <div class="quiz-banner-icon" aria-hidden="true">
+          <Icon name="sparkles" size={24} color="#C9663C" />
+        </div>
+        <div>
+          <h2>Not sure what your pet needs?</h2>
+          <p>Answer 5 quick questions → get a personalized product recommendation in 60 seconds.</p>
+        </div>
+      </div>
+      <a href="/quiz" class="quiz-banner-btn">
+        <span>Take the free quiz</span>
+        <Icon name="arrowRight" size={15} color="#2D6A4F" aria-hidden={true} />
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="section" aria-labelledby="featured-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <div>
+          <p class="section-eyebrow">Curated for you</p>
+          <h2 id="featured-heading">Shop our picks</h2>
+        </div>
+        <a href="/products" class="see-all" aria-label="See all products">
+          <span>See all</span>
+          <Icon name="arrowRight" size={14} color="#2D6A4F" aria-hidden={true} />
+        </a>
+      </div>
+
+      <div class="products-grid reveal" role="list">
+        {featuredProducts.length > 0 ? featuredProducts.map((product: any) => {
+          const price = Number(product.actualPriceRange?.minValue?.amount ?? 0).toFixed(2);
+          const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
+          return (
+            <a href={`/products/${product.slug}`} class="product-card" role="listitem">
+              <div class="product-img">
+                {imageUrl
+                  ? <img src={imageUrl} alt={product.name} loading="lazy" />
+                  : <div class="product-img-placeholder" aria-hidden="true">
+                      <Icon name="paw" size={40} color="#C5B9AE" />
+                    </div>
+                }
+              </div>
+              <div class="product-info">
+                <h3>{product.name}</h3>
+                <div class="product-footer">
+                  <span class="product-price">${price}</span>
+                  <span class="btn-add" aria-label={`Add ${product.name} to cart`}>Add to cart</span>
+                </div>
+              </div>
+            </a>
+          );
+        }) : (
+          <>
+            {[
+              { icon: 'zap',      name: 'Automatic Laser Cat Toy',    price: '24.99' },
+              { icon: 'sparkles', name: 'Deshedding Grooming Glove',  price: '14.99' },
+              { icon: 'heart',    name: 'Pet Paw Cleaner Cup',        price: '18.99' },
+            ].map((item) => (
+              <article class="product-card" role="listitem">
+                <div class="product-img">
+                  <div class="product-img-placeholder" aria-hidden="true">
+                    <Icon name={item.icon} size={40} color="#C5B9AE" />
+                  </div>
+                </div>
+                <div class="product-info">
+                  <h3>{item.name}</h3>
+                  <div class="product-footer">
+                    <span class="product-price">${item.price}</span>
+                    <a href="/products" class="btn-add">Shop now</a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Why PawVault -->
+  <section class="section section--alt" aria-labelledby="why-heading">
+    <div class="section-inner">
+      <div class="section-header section-header--center">
+        <p class="section-eyebrow">Why PawVault</p>
+        <h2 id="why-heading">Built differently,<br/>for pet parents who care.</h2>
+      </div>
+      <div class="why-grid reveal" role="list">
+        <article class="why-card" role="listitem">
+          <div class="why-icon-wrap" aria-hidden="true">
+            <Icon name="search" size={22} color="#2D6A4F" />
+          </div>
+          <h3>AI-curated selection</h3>
+          <p>Every product is analyzed for quality, safety, and value before it ever reaches our store. Most of what we research doesn't make the cut.</p>
+        </article>
+        <article class="why-card" role="listitem">
+          <div class="why-icon-wrap" aria-hidden="true">
+            <Icon name="zap" size={22} color="#2D6A4F" />
+          </div>
+          <h3>Fair shipping</h3>
+          <p>Free shipping on all orders over $35 across the contiguous US.</p>
+        </article>
+        <article class="why-card" role="listitem">
+          <div class="why-icon-wrap" aria-hidden="true">
+            <Icon name="shield" size={22} color="#2D6A4F" />
+          </div>
+          <h3>Pet safety first</h3>
+          <p>We only sell products we'd use on our own pets. Every item is reviewed for material safety, durability, and real-world usability.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Email Capture -->
+  <section class="email-section" aria-label="Newsletter signup">
+    <div class="email-inner">
+      <div class="email-content">
+        <div class="email-icon" aria-hidden="true">
+          <Icon name="mail" size={24} color="#2D6A4F" />
+        </div>
+        <h2>Get 10% off your first order</h2>
+        <p>Join our newsletter for exclusive deals, new arrivals, and pet care tips. No spam, ever.</p>
+      </div>
+      <form class="email-form" id="email-form" novalidate>
+        <div class="email-form-group">
+          <label for="email-input" class="sr-only">Email address</label>
+          <input
+            type="email"
+            id="email-input"
+            name="email"
+            placeholder="your@email.com"
+            autocomplete="email"
+            required
+            aria-required="true"
+          />
+          <button type="submit">
+            <span>Get 10% off</span>
+            <Icon name="arrowRight" size={15} color="white" aria-hidden={true} />
+          </button>
+        </div>
+        <p class="email-fine">No spam. Unsubscribe anytime.</p>
+        <p class="email-success" id="email-success" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section reveal" aria-label="Call to action">
+    <div class="cta-inner">
+      <div class="cta-icon" aria-hidden="true">
+        <Icon name="paw" size={32} color="#2D6A4F" />
+      </div>
+      <h2>Ready to spoil your pet?</h2>
+      <p>AI-curated pet accessories at fair prices, backed by a 30-day return policy.</p>
+      <div class="cta-actions">
+        <a href="/products" class="btn-primary btn-primary--lg">
+          <span>Browse all products</span>
+          <Icon name="arrowRight" size={18} color="#FFF9F0" aria-hidden={true} />
+        </a>
+        <a href="/quiz" class="btn-cta-secondary">
+          <Icon name="sparkles" size={16} color="#2D6A4F" aria-hidden={true} />
+          <span>Take the quiz first</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+// Scroll-reveal: fade + slide up on enter
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Email form
+const emailForm = document.getElementById('email-form') as HTMLFormElement;
+const emailSuccess = document.getElementById('email-success')!;
+emailForm?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = emailForm.querySelector('input[type="email"]') as HTMLInputElement;
+  if (!input.value || !input.validity.valid) {
+    input.focus();
+    return;
+  }
+  // In production: POST to your email service (Klaviyo, Mailchimp, etc.)
+  emailSuccess.textContent = '🎉 You\'re in! Check your email for your 10% off code.';
+  emailSuccess.style.display = 'block';
+  emailForm.querySelector('.email-form-group')!.classList.add('hidden');
+});
+</script>
+
 </Layout>
+
+<style>
+  :root {
+    --green: #2D6A4F;
+    --cream: #FFF9F0;
+    --terra: #C9663C;
+    --dark: #0F1117;
+    --gray: #6B7280;
+    --border: #E8E3DB;
+    --radius: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.1);
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(160deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%);
+    padding: 100px 32px 80px;
+    overflow: hidden;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,249,240,0.12);
+    border: 1px solid rgba(255,249,240,0.2);
+    color: rgba(255,249,240,0.9);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 24px;
+  }
+
+  .hero-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5.5vw, 4rem);
+    color: #FFF9F0;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .hero-content h1 em {
+    color: #B7E4C7;
+    font-style: italic;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: rgba(255,249,240,0.75);
+    line-height: 1.7;
+    max-width: 440px;
+    margin-bottom: 36px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 44px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--terra);
+    color: var(--cream);
+    padding: 13px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px rgba(201,102,60,0.4);
+  }
+  .btn-primary:hover {
+    background: #b85a33;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,102,60,0.45);
+  }
+  .btn-primary--lg { padding: 15px 28px; font-size: 1rem; }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,249,240,0.8);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 13px 20px;
+    border-radius: 10px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .btn-secondary:hover {
+    color: var(--cream);
+    background: rgba(255,249,240,0.08);
+  }
+
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .hero-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hero-stats strong {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+  }
+  .hero-stats span {
+    font-size: 0.78rem;
+    color: rgba(255,249,240,0.6);
+    white-space: nowrap;
+  }
+  .stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,249,240,0.15);
+  }
+
+  /* Hero visual */
+  .hero-visual {
+    position: relative;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-orb {
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle at 40% 40%, rgba(183,228,199,0.25), rgba(64,145,108,0.08));
+    border-radius: 50%;
+    border: 1px solid rgba(255,249,240,0.1);
+    position: absolute;
+  }
+  .hero-card {
+    position: absolute;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,249,240,0.18);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  .hero-card--1 { top: 20px; right: -20px; }
+  .hero-card--2 { bottom: 40px; left: -10px; }
+  .hero-card-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,249,240,0.12);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .hero-card-title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--cream);
+    margin-bottom: 3px;
+  }
+  .hero-card-sub {
+    font-size: 0.75rem;
+    color: rgba(255,249,240,0.65);
+  }
+  .hero-card-stars {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .hero-card-badge {
+    margin-left: auto;
+    background: var(--terra);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  /* Star ratings */
+  .stars-css {
+    color: #F59E0B;
+    letter-spacing: 1px;
+    font-size: 0.88rem;
+    line-height: 1;
+  }
+  .stars-lg { font-size: 1.25rem; }
+
+  /* ── Trust bar ── */
+  .trust-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+  }
+  .trust-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 24px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--dark);
+    white-space: nowrap;
+  }
+  .trust-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  /* ── Quiz Banner ── */
+  .quiz-banner {
+    background: linear-gradient(135deg, #FFF9F0 0%, #FFF3E8 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+  }
+  .quiz-banner-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .quiz-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .quiz-banner-icon {
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .quiz-banner-left h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 3px;
+    letter-spacing: -0.01em;
+  }
+  .quiz-banner-left p {
+    font-size: 0.875rem;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  .quiz-banner-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: var(--green);
+    border: 1.5px solid var(--green);
+    padding: 11px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.15s, transform 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .quiz-banner-btn:hover {
+    background: var(--green);
+    color: white;
+    transform: translateY(-1px);
+  }
+  .quiz-banner-btn:hover svg path { stroke: white; }
+
+  /* ── Sections ── */
+  .section { padding: 96px 32px; }
+  .section--alt { background: white; }
+  .section-inner { max-width: 1280px; margin: 0 auto; }
+
+  .section-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 48px;
+  }
+  .section-header--center {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .section-header h2, .section-header--center h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    color: var(--dark);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .see-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .see-all:hover { background: rgba(45,106,79,0.06); }
+
+  /* Reviews aggregate */
+  .reviews-aggregate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 0.9rem;
+    color: var(--gray);
+  }
+  .reviews-aggregate strong { color: var(--dark); font-weight: 700; }
+
+  /* Reviews grid */
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .review-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+  .review-card:hover { box-shadow: var(--shadow-md); }
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), #40916C);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+  .review-meta { flex: 1; min-width: 0; }
+  .review-name {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark);
+  }
+  .review-location {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--gray);
+  }
+  .review-date {
+    font-size: 0.75rem;
+    color: var(--gray);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .review-stars { margin-bottom: 8px; }
+  .review-product {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--green);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .review-text {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.7;
+  }
+
+  /* Products grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .product-card {
+    background: white;
+    border-radius: 16px;
+    overflow: visible;
+    text-decoration: none;
+    color: var(--dark);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: block;
+    position: relative;
+  }
+  .product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+  .product-card:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+  /* Clip only the image area */
+  .product-card .product-img {
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+  }
+
+  /* Product badge */
+  .product-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 100px;
+    z-index: 2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .product-badge--bestseller {
+    background: var(--terra);
+    color: white;
+  }
+  .product-badge--new {
+    background: var(--green);
+    color: white;
+  }
+
+  .product-img {
+    height: 220px;
+    background: #F5EFE8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-img-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+  }
+  .product-info { padding: 20px; }
+
+  .product-stars {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+  }
+  .stars-count {
+    font-size: 0.78rem;
+    color: var(--gray);
+    font-weight: 500;
+  }
+
+  .product-info h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 14px;
+    color: var(--dark);
+  }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 1.1rem; font-weight: 700; color: var(--green); }
+  .btn-add {
+    background: var(--green);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 8px;
+    transition: background 0.15s;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-add:hover { background: #235c43; }
+
+  /* Why grid */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .why-card {
+    padding: 32px;
+    border-radius: 16px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+  .why-card:hover { box-shadow: var(--shadow-md); }
+  .why-icon-wrap {
+    width: 48px;
+    height: 48px;
+    background: rgba(45,106,79,0.08);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .why-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+  .why-card p {
+    font-size: 0.9rem;
+    color: var(--gray);
+    line-height: 1.65;
+  }
+
+  /* Reviews section bg */
+  .reviews-section { background: #FAFAF9; }
+
+  /* ── Email section ── */
+  .email-section {
+    background: var(--green);
+    padding: 72px 32px;
+  }
+  .email-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .email-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(255,249,240,0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .email-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    color: var(--cream);
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .email-content p {
+    font-size: 0.95rem;
+    color: rgba(255,249,240,0.75);
+    line-height: 1.65;
+  }
+  .email-form-group {
+    display: flex;
+    gap: 8px;
+  }
+  .email-form-group.hidden { display: none; }
+  .email-form input {
+    flex: 1;
+    background: rgba(255,249,240,0.12);
+    border: 1.5px solid rgba(255,249,240,0.25);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 0.95rem;
+    color: var(--cream);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .email-form input::placeholder { color: rgba(255,249,240,0.45); }
+  .email-form input:focus { border-color: rgba(255,249,240,0.6); }
+  .email-form button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--terra);
+    color: white;
+    border: none;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .email-form button:hover {
+    background: #b85a33;
+    transform: translateY(-1px);
+  }
+  .email-fine {
+    font-size: 0.75rem;
+    color: rgba(255,249,240,0.45);
+    margin-top: 10px;
+  }
+  .email-success {
+    display: none;
+    font-size: 0.95rem;
+    color: #B7E4C7;
+    font-weight: 500;
+    margin-top: 12px;
+  }
+
+  /* CTA section */
+  .cta-section {
+    background: var(--cream);
+    border-top: 1px solid var(--border);
+    padding: 96px 32px;
+    text-align: center;
+  }
+  .cta-inner {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .cta-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(45,106,79,0.08);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+  }
+  .cta-inner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.25rem;
+    letter-spacing: -0.02em;
+    color: var(--dark);
+    margin-bottom: 14px;
+  }
+  .cta-inner p {
+    color: var(--gray);
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: 32px;
+  }
+  .cta-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 13px 20px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(45,106,79,0.3);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-cta-secondary:hover {
+    background: rgba(45,106,79,0.06);
+    border-color: var(--green);
+  }
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* Accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  @media (max-width: 960px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .why-grid { grid-template-columns: 1fr; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .email-inner { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 640px) {
+    .hero { padding: 72px 20px 60px; }
+    .section { padding: 64px 20px; }
+    .trust-divider { display: none; }
+    .trust-item { padding: 6px 12px; }
+    .quiz-banner { padding: 20px; }
+    .quiz-banner-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .email-section { padding: 56px 20px; }
+    .email-form-group { flex-direction: column; }
+  }
+</style>

@@ -1,0 +1,202 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icons.astro';
+import { getWixProductsClient } from '../../lib/wixProductsClient';
+import { resolveWixImage } from '../../lib/wixImage';
+
+let products: any[] = [];
+try {
+  const result = await getWixProductsClient().productsV3.queryProducts().limit(20).find();
+  products = result.items || [];
+} catch (e) {
+  products = [];
+}
+---
+
+<Layout title="Shop All Products" description="Browse premium pet accessories for cats and dogs.">
+  <div class="page-inner">
+    <div class="page-header">
+      <div>
+        <p class="section-eyebrow">All products</p>
+        <h1>Shop Everything</h1>
+        <p class="page-sub">{products.length > 0 ? `${products.length} curated products for your pet` : 'AI-curated accessories for cats & dogs'}</p>
+      </div>
+    </div>
+
+    {products.length === 0 ? (
+      <div class="empty-state" role="status">
+        <div class="empty-icon" aria-hidden="true">
+          <Icon name="paw" size={40} color="#C5B9AE" />
+        </div>
+        <h2>Products coming soon</h2>
+        <p>Check back shortly, or visit your <a href="https://manage.wix.com/dashboard/92ddcf5c-c073-45a4-aadc-de8adbf047ec" target="_blank" rel="noopener noreferrer">Wix Dashboard</a> to add products.</p>
+      </div>
+    ) : (
+      <div class="products-grid" role="list">
+        {products.map((product: any) => {
+          const price = Number(product.actualPriceRange?.minValue?.amount ?? 0).toFixed(2);
+          const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
+          return (
+            <a href={`/products/${product.slug}`} class="product-card" role="listitem" aria-label={`${product.name}, $${price}`}>
+              <div class="product-img">
+                {imageUrl
+                  ? <img src={imageUrl} alt={product.name} loading="lazy" />
+                  : <div class="product-img-placeholder" aria-hidden="true">
+                      <Icon name="paw" size={44} color="#C5B9AE" />
+                    </div>
+                }
+              </div>
+              <div class="product-info">
+                <h3>{product.name}</h3>
+                {product.plainDescription && (
+                  <p class="product-desc">{product.plainDescription.replace(/<[^>]*>/g,'').slice(0,80)}…</p>
+                )}
+                <div class="product-footer">
+                  <span class="product-price">${price}</span>
+                  <span class="btn-add" aria-hidden="true">Add to cart</span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  :root {
+    --green: #2D6A4F;
+    --cream: #FFF9F0;
+    --terra: #C9663C;
+    --dark: #0F1117;
+    --gray: #6B7280;
+    --border: #E8E3DB;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+  }
+
+  .page-inner { max-width: 1280px; margin: 0 auto; padding: 64px 32px 96px; }
+
+  .section-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .page-header { margin-bottom: 56px; }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--dark);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .page-sub { color: var(--gray); font-size: 1rem; }
+
+  /* Empty state */
+  .empty-state {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 72px 48px;
+    text-align: center;
+  }
+  .empty-icon {
+    width: 72px;
+    height: 72px;
+    background: #F5EFE8;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .empty-state h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+  .empty-state p { color: var(--gray); line-height: 1.65; }
+  .empty-state a { color: var(--green); font-weight: 500; }
+
+  /* Grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+    gap: 20px;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--dark);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: block;
+  }
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .product-card:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+
+  .product-img {
+    height: 220px;
+    background: #F5EFE8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-img-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+  }
+
+  .product-info { padding: 20px; }
+  .product-info h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    color: var(--dark);
+  }
+  .product-desc {
+    color: var(--gray);
+    font-size: 0.83rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .product-footer { display: flex; justify-content: space-between; align-items: center; }
+  .product-price { font-size: 1.1rem; font-weight: 700; color: var(--green); }
+  .btn-add {
+    background: var(--green);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .product-card:hover .btn-add { background: #235c43; }
+
+  @media (max-width: 640px) {
+    .page-inner { padding: 48px 20px 72px; }
+  }
+</style>
