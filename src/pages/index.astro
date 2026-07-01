@@ -3,11 +3,20 @@ import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icons.astro';
 import { getWixProductsClient } from '../lib/wixProductsClient';
 import { resolveWixImage } from '../lib/wixImage';
+import { FEATURED_SLUGS } from '../lib/featured';
 
+// Hero products get dedicated placement. The Stores query API doesn't allow
+// list operators on `slug`, so fetch the catalog and pick the featured slugs
+// in JS, preserving their configured order. Falls back to an empty section
+// rather than filling with unrelated products if a slug is missing.
 let featuredProducts: any[] = [];
 try {
-  const result = await getWixProductsClient().productsV3.queryProducts().limit(3).find();
-  featuredProducts = result.items || [];
+  const result = await getWixProductsClient()
+    .productsV3.queryProducts({ fields: ['PLAIN_DESCRIPTION'] })
+    .limit(100)
+    .find();
+  const bySlug = new Map((result.items ?? []).map((p: any) => [p.slug, p]));
+  featuredProducts = FEATURED_SLUGS.map((s) => bySlug.get(s)).filter(Boolean);
 } catch (e) { featuredProducts = []; }
 ---
 
@@ -106,7 +115,7 @@ try {
         </div>
         <div>
           <h2>Not sure what your pet needs?</h2>
-          <p>Answer 5 quick questions → get a personalized product recommendation in 60 seconds.</p>
+          <p>Answer 5 quick questions and get a personalized product recommendation in 60 seconds.</p>
         </div>
       </div>
       <a href="/quiz" class="quiz-banner-btn">
@@ -116,70 +125,53 @@ try {
     </div>
   </section>
 
-  <!-- Featured Products -->
-  <section class="section" aria-labelledby="featured-heading">
-    <div class="section-inner">
-      <div class="section-header">
-        <div>
-          <p class="section-eyebrow">Curated for you</p>
-          <h2 id="featured-heading">Shop our picks</h2>
+  <!-- Featured hero products -->
+  {featuredProducts.length > 0 && (
+    <section class="section" aria-labelledby="featured-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div>
+            <p class="section-eyebrow">Featured</p>
+            <h2 id="featured-heading">Our hero products</h2>
+          </div>
+          <a href="/products" class="see-all" aria-label="See all products">
+            <span>See all</span>
+            <Icon name="arrowRight" size={14} color="#2D6A4F" aria-hidden={true} />
+          </a>
         </div>
-        <a href="/products" class="see-all" aria-label="See all products">
-          <span>See all</span>
-          <Icon name="arrowRight" size={14} color="#2D6A4F" aria-hidden={true} />
-        </a>
-      </div>
 
-      <div class="products-grid reveal" role="list">
-        {featuredProducts.length > 0 ? featuredProducts.map((product: any) => {
-          const price = Number(product.actualPriceRange?.minValue?.amount ?? 0).toFixed(2);
-          const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
-          return (
-            <a href={`/products/${product.slug}`} class="product-card" role="listitem">
-              <div class="product-img">
-                {imageUrl
-                  ? <img src={imageUrl} alt={product.name} loading="lazy" />
-                  : <div class="product-img-placeholder" aria-hidden="true">
-                      <Icon name="paw" size={40} color="#C5B9AE" />
-                    </div>
-                }
-              </div>
-              <div class="product-info">
-                <h3>{product.name}</h3>
-                <div class="product-footer">
-                  <span class="product-price">${price}</span>
-                  <span class="btn-add" aria-label={`Add ${product.name} to cart`}>Add to cart</span>
-                </div>
-              </div>
-            </a>
-          );
-        }) : (
-          <>
-            {[
-              { icon: 'zap',      name: 'Automatic Laser Cat Toy',    price: '24.99' },
-              { icon: 'sparkles', name: 'Deshedding Grooming Glove',  price: '14.99' },
-              { icon: 'heart',    name: 'Pet Paw Cleaner Cup',        price: '18.99' },
-            ].map((item) => (
-              <article class="product-card" role="listitem">
+        <div class="products-grid reveal" role="list">
+          {featuredProducts.map((product: any) => {
+            const price = Number(product.actualPriceRange?.minValue?.amount ?? 0).toFixed(2);
+            const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
+            const blurb = (product.plainDescription ?? '')
+              .split(/<\/p>/i)[0].replace(/<[^>]*>/g, '').trim().slice(0, 110);
+            return (
+              <a href={`/products/${product.slug}`} class="product-card product-card--featured" role="listitem">
+                <span class="product-badge product-badge--featured">Featured</span>
                 <div class="product-img">
-                  <div class="product-img-placeholder" aria-hidden="true">
-                    <Icon name={item.icon} size={40} color="#C5B9AE" />
-                  </div>
+                  {imageUrl
+                    ? <img src={imageUrl} alt={product.name} loading="lazy" />
+                    : <div class="product-img-placeholder" aria-hidden="true">
+                        <Icon name="paw" size={40} color="#C5B9AE" />
+                      </div>
+                  }
                 </div>
                 <div class="product-info">
-                  <h3>{item.name}</h3>
+                  <h3>{product.name}</h3>
+                  {blurb && <p class="product-blurb">{blurb}…</p>}
                   <div class="product-footer">
-                    <span class="product-price">${item.price}</span>
-                    <a href="/products" class="btn-add">Shop now</a>
+                    <span class="product-price">${price}</span>
+                    <span class="btn-add" aria-label={`View ${product.name}`}>View product</span>
                   </div>
                 </div>
-              </article>
-            ))}
-          </>
-        )}
+              </a>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <!-- Why PawVault -->
   <section class="section section--alt" aria-labelledby="why-heading">
@@ -827,6 +819,10 @@ emailForm?.addEventListener('submit', async (e) => {
     background: var(--green);
     color: white;
   }
+  .product-badge--featured {
+    background: var(--green);
+    color: var(--cream);
+  }
 
   .product-img {
     height: 220px;
@@ -862,8 +858,14 @@ emailForm?.addEventListener('submit', async (e) => {
     font-size: 0.95rem;
     font-weight: 600;
     line-height: 1.4;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
     color: var(--dark);
+  }
+  .product-blurb {
+    font-size: 0.83rem;
+    color: var(--gray);
+    line-height: 1.5;
+    margin-bottom: 14px;
   }
   .product-footer { display: flex; align-items: center; justify-content: space-between; }
   .product-price { font-size: 1.1rem; font-weight: 700; color: var(--green); }

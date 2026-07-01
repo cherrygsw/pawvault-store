@@ -11,7 +11,7 @@ let relatedProducts: any[] = [];
 try {
   const client = getWixProductsClient();
   const result = await client.productsV3.getProductBySlug(slug as string, {
-    fields: ['PLAIN_DESCRIPTION', 'INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION'],
+    fields: ['PLAIN_DESCRIPTION', 'INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'VARIANT_OPTION_CHOICE_NAMES'],
   });
   product = result.product || null;
 
@@ -29,27 +29,41 @@ if (!product) {
 const price = Number(
   product.variantsInfo?.variants?.[0]?.price?.actualPrice?.amount ?? product.actualPriceRange?.minValue?.amount ?? 0
 ).toFixed(2);
-const description = product.plainDescription?.replace(/<[^>]*>/g, '') ?? '';
 const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
 
-// Wix Stores gives every product a "Shipping Info" info section, but it starts
-// out filled with Wix's own placeholder copy ("I'm a great place to add more
-// information about your shipping methods..."). Only show it once a merchant
-// has actually replaced that text — otherwise it reads as real shipping info
-// when it isn't, so we fall back to a neutral, no-promise line instead.
-const WIX_SHIPPING_PLACEHOLDER_MARKER = "great place to add more information about your";
-const shippingSection = product.infoSections?.find(
-  (s: any) => s.uniqueName === 'Shipping Info' || s.title === 'Shipping Info'
-);
-const shippingSectionText = shippingSection?.plainDescription?.replace(/<[^>]*>/g, '').trim() ?? '';
-const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SHIPPING_PLACEHOLDER_MARKER)
-  ? shippingSectionText
-  : null;
+// plainDescription comes back as HTML (<p>...</p><p>...</p>); render each
+// paragraph separately instead of stripping to one run-on blob.
+const paragraphs: string[] = (product.plainDescription ?? '')
+  .split(/<\/p>/i)
+  .map((p: string) => p.replace(/<[^>]*>/g, '').trim())
+  .filter((p: string) => p.length > 0);
+const metaDescription = paragraphs.join(' ');
+
+// Variant/size selection. Products with a Size option expose one variant per
+// size; single-variant products add to cart directly by product id.
+const variants = (product.variantsInfo?.variants ?? []).map((v: any) => ({
+  id: v._id,
+  size: v.choices?.[0]?.optionChoiceNames?.choiceName ?? null,
+  price: Number(v.price?.actualPrice?.amount ?? price).toFixed(2),
+}));
+const hasSizes = variants.length > 1 && variants.every((v: any) => v.size);
+
+// Only display an info section once a merchant has replaced Wix's seeded
+// placeholder text — otherwise the boilerplate would read as if it were real.
+function realSection(names: string[], placeholderMarker: string): string | null {
+  const section = product.infoSections?.find(
+    (s: any) => names.includes(s.uniqueName) || names.includes(s.title)
+  );
+  const text = section?.plainDescription?.replace(/<[^>]*>/g, '').trim() ?? '';
+  return text && !text.toLowerCase().includes(placeholderMarker) ? text : null;
+}
+const shippingInfo = realSection(['Shipping Info'], 'great place to add more information about your');
+const deliveryWindow = realSection(['Delivery window'], 'to be set from supplier lead time');
 ---
 
 <Layout
   title={product.name}
-  description={description.slice(0, 160) || `${product.name} — available at PawVault.`}
+  description={metaDescription.slice(0, 160) || `${product.name} — available at PawVault.`}
 >
   <div class="page-inner">
 
@@ -88,7 +102,26 @@ const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SH
 
         <p class="price" aria-label={`Price: $${price}`}>${price}</p>
 
-        {description && <p class="description">{description}</p>}
+        {paragraphs.map((para) => <p class="description">{para}</p>)}
+
+        {hasSizes && (
+          <div class="size-selector" data-variants={JSON.stringify(variants)}>
+            <span class="size-label" id="size-label">Size</span>
+            <div class="size-options" role="radiogroup" aria-labelledby="size-label">
+              {variants.map((v: any, i: number) => (
+                <button
+                  class="size-option"
+                  role="radio"
+                  aria-checked={i === 0 ? 'true' : 'false'}
+                  data-variant-id={v.id}
+                  data-size={v.size}
+                >
+                  {v.size}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <!-- Quantity + Add to cart -->
         <div class="purchase-row">
@@ -112,11 +145,18 @@ const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SH
         <!-- Secondary CTA -->
         <a href="/quiz" class="quiz-nudge">
           <Icon name="sparkles" size={14} color="#C9663C" aria-hidden={true} />
-          <span>Not sure this is right for your pet? <strong>Take the quiz →</strong></span>
+          <span>Not sure this is right for your pet? <strong>Take the quiz</strong></span>
+          <Icon name="arrowRight" size={13} color="#C9663C" aria-hidden={true} />
         </a>
 
         <!-- Product meta -->
         <div class="product-meta" role="list" aria-label="Product details">
+          {deliveryWindow && (
+            <div class="meta-item" role="listitem">
+              <Icon name="package" size={15} color="#6B7280" aria-hidden={true} />
+              <span>{deliveryWindow}</span>
+            </div>
+          )}
           <div class="meta-item" role="listitem">
             <Icon name="truck" size={15} color="#6B7280" aria-hidden={true} />
             <span>{shippingInfo ?? 'Shipping details available at checkout'}</span>
@@ -180,6 +220,22 @@ const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SH
     if (qty < 10) { qty++; display.textContent = String(qty); }
   });
 
+  // Size selection (only present on products with size options)
+  let selectedVariantId: string | null = null;
+  const sizeSelector = document.querySelector<HTMLElement>('.size-selector');
+  if (sizeSelector) {
+    const options = sizeSelector.querySelectorAll<HTMLButtonElement>('.size-option');
+    // Default to the first size so the flagship mat is addable in one click.
+    selectedVariantId = options[0]?.dataset.variantId ?? null;
+    options.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        options.forEach((o) => o.setAttribute('aria-checked', 'false'));
+        opt.setAttribute('aria-checked', 'true');
+        selectedVariantId = opt.dataset.variantId ?? null;
+      });
+    });
+  }
+
   // Add to cart
   const addToCartBtn = document.getElementById('add-to-cart') as HTMLButtonElement;
   const addToCartLabel = document.getElementById('add-to-cart-label')!;
@@ -198,7 +254,7 @@ const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SH
       const res = await fetch('/api/cart/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ catalogItemId, quantity: qty }),
+        body: JSON.stringify({ catalogItemId, quantity: qty, variantId: selectedVariantId }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -384,6 +440,39 @@ const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SH
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.6; transform: scale(0.8); }
   }
+
+  /* Size selector */
+  .size-selector { margin-bottom: 20px; }
+  .size-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+  .size-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .size-option {
+    min-width: 56px;
+    padding: 10px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--dark);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .size-option:hover { border-color: var(--green); }
+  .size-option[aria-checked="true"] {
+    border-color: var(--green);
+    background: rgba(45,106,79,0.06);
+    font-weight: 600;
+  }
+  .size-option:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 
   /* Quantity + Add to cart */
   .purchase-row {

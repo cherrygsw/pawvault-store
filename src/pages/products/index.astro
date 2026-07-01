@@ -3,11 +3,17 @@ import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icons.astro';
 import { getWixProductsClient } from '../../lib/wixProductsClient';
 import { resolveWixImage } from '../../lib/wixImage';
+import { FEATURED_SLUGS, isFeatured } from '../../lib/featured';
 
 let products: any[] = [];
 try {
   const result = await getWixProductsClient().productsV3.queryProducts({ fields: ['PLAIN_DESCRIPTION'] }).limit(20).find();
-  products = result.items || [];
+  const items = result.items || [];
+  // Surface the featured hero products first, in their configured order,
+  // then the rest in catalog order.
+  const featured = FEATURED_SLUGS.map((s) => items.find((p: any) => p.slug === s)).filter(Boolean);
+  const rest = items.filter((p: any) => !isFeatured(p.slug));
+  products = [...featured, ...rest];
 } catch (e) {
   products = [];
 }
@@ -38,6 +44,7 @@ try {
           const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
           return (
             <a href={`/products/${product.slug}`} class="product-card" role="listitem" aria-label={`${product.name}, $${price}`}>
+              {isFeatured(product.slug) && <span class="product-badge">Featured</span>}
               <div class="product-img">
                 {imageUrl
                   ? <img src={imageUrl} alt={product.name} loading="lazy" />
@@ -132,6 +139,7 @@ try {
   }
 
   .product-card {
+    position: relative;
     background: white;
     border-radius: 16px;
     overflow: hidden;
@@ -149,6 +157,20 @@ try {
   .product-card:focus-visible {
     outline: 2px solid var(--green);
     outline-offset: 2px;
+  }
+  .product-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    background: var(--green);
+    color: var(--cream);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .product-img {
