@@ -285,17 +285,37 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 // Email form
 const emailForm = document.getElementById('email-form') as HTMLFormElement;
 const emailSuccess = document.getElementById('email-success')!;
-emailForm?.addEventListener('submit', (e) => {
+emailForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const input = emailForm.querySelector('input[type="email"]') as HTMLInputElement;
   if (!input.value || !input.validity.valid) {
     input.focus();
     return;
   }
-  // In production: POST to your email service (Klaviyo, Mailchimp, etc.)
-  emailSuccess.textContent = '🎉 You\'re in! Check your email for your 10% off code.';
-  emailSuccess.style.display = 'block';
-  emailForm.querySelector('.email-form-group')!.classList.add('hidden');
+  const submitBtn = emailForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+  submitBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/newsletter/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: input.value }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      emailSuccess.textContent = 'Thanks for signing up — we\'ll follow up with your 10% off code.';
+      emailSuccess.style.display = 'block';
+      emailForm.querySelector('.email-form-group')!.classList.add('hidden');
+    } else {
+      emailSuccess.textContent = data.error || 'Something went wrong. Please try again.';
+      emailSuccess.style.display = 'block';
+      submitBtn.disabled = false;
+    }
+  } catch {
+    emailSuccess.textContent = 'Something went wrong. Please try again.';
+    emailSuccess.style.display = 'block';
+    submitBtn.disabled = false;
+  }
 });
 </script>
 
