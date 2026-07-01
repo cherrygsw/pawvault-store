@@ -6,7 +6,7 @@ import { resolveWixImage } from '../../lib/wixImage';
 
 let products: any[] = [];
 try {
-  const result = await getWixProductsClient().productsV3.queryProducts().limit(20).find();
+  const result = await getWixProductsClient().productsV3.queryProducts({ fields: ['PLAIN_DESCRIPTION'] }).limit(20).find();
   products = result.items || [];
 } catch (e) {
   products = [];

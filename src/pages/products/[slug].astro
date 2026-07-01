@@ -10,7 +10,9 @@ let product: any = null;
 let relatedProducts: any[] = [];
 try {
   const client = getWixProductsClient();
-  const result = await client.productsV3.getProductBySlug(slug as string);
+  const result = await client.productsV3.getProductBySlug(slug as string, {
+    fields: ['PLAIN_DESCRIPTION', 'INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION'],
+  });
   product = result.product || null;
 
   // Fetch a few related products (exclude current)
@@ -29,6 +31,20 @@ const price = Number(
 ).toFixed(2);
 const description = product.plainDescription?.replace(/<[^>]*>/g, '') ?? '';
 const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main?.image);
+
+// Wix Stores gives every product a "Shipping Info" info section, but it starts
+// out filled with Wix's own placeholder copy ("I'm a great place to add more
+// information about your shipping methods..."). Only show it once a merchant
+// has actually replaced that text — otherwise it reads as real shipping info
+// when it isn't, so we fall back to a neutral, no-promise line instead.
+const WIX_SHIPPING_PLACEHOLDER_MARKER = "great place to add more information about your";
+const shippingSection = product.infoSections?.find(
+  (s: any) => s.uniqueName === 'Shipping Info' || s.title === 'Shipping Info'
+);
+const shippingSectionText = shippingSection?.plainDescription?.replace(/<[^>]*>/g, '').trim() ?? '';
+const shippingInfo = shippingSectionText && !shippingSectionText.includes(WIX_SHIPPING_PLACEHOLDER_MARKER)
+  ? shippingSectionText
+  : null;
 ---
 
 <Layout
@@ -101,6 +117,10 @@ const imageUrl = product.media?.main?.url ?? resolveWixImage(product.media?.main
 
         <!-- Product meta -->
         <div class="product-meta" role="list" aria-label="Product details">
+          <div class="meta-item" role="listitem">
+            <Icon name="truck" size={15} color="#6B7280" aria-hidden={true} />
+            <span>{shippingInfo ?? 'Shipping details available at checkout'}</span>
+          </div>
           <div class="meta-item" role="listitem">
             <Icon name="lock" size={15} color="#6B7280" aria-hidden={true} />
             <span>SSL-encrypted secure checkout</span>
