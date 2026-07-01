@@ -1,0 +1,342 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icons.astro';
+---
+
+<Layout title="FAQ" description="Answers to your most common questions about PawVault — shipping, returns, payments, and more.">
+  <div class="page-inner">
+
+    <div class="page-hero">
+      <div class="hero-badge">
+        <Icon name="shield" size={13} color="#2D6A4F" aria-hidden={true} />
+        <span>Help center</span>
+      </div>
+      <h1>Frequently asked questions</h1>
+      <p>Everything you need to know. Can't find your answer? Email us at <a href="mailto:hello@pawvault.com">hello@pawvault.com</a>.</p>
+    </div>
+
+    <div class="faq-grid">
+
+      <section class="faq-category" aria-labelledby="shipping-heading">
+        <div class="category-header">
+          <div class="category-icon" aria-hidden="true">
+            <Icon name="truck" size={20} color="#2D6A4F" />
+          </div>
+          <h2 id="shipping-heading">Shipping</h2>
+        </div>
+        <div class="faq-list">
+          {[
+            {
+              q: 'How long does shipping take?',
+              a: 'Standard shipping takes 5–8 business days within the contiguous US. Expedited options are available at checkout.',
+            },
+            {
+              q: 'Do you offer free shipping?',
+              a: 'Yes! All orders over $35 ship free via standard shipping. Orders under $35 have a flat $4.99 shipping fee.',
+            },
+            {
+              q: 'Do you ship internationally?',
+              a: 'We currently ship within the United States only. International shipping is on our roadmap — sign up for our newsletter to be notified when it launches.',
+            },
+            {
+              q: 'How can I track my order?',
+              a: "Once your order ships, you'll receive a confirmation email with a tracking number. You can also track directly from your order confirmation page.",
+            },
+          ].map(item => (
+            <details class="faq-item">
+              <summary class="faq-question">
+                <span>{item.q}</span>
+                <span class="faq-chevron" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="faq-category" aria-labelledby="returns-heading">
+        <div class="category-header">
+          <div class="category-icon" aria-hidden="true">
+            <Icon name="refresh" size={20} color="#2D6A4F" />
+          </div>
+          <h2 id="returns-heading">Returns and Refunds</h2>
+        </div>
+        <div class="faq-list">
+          {[
+            {
+              q: 'What is your return policy?',
+              a: "We offer 30-day hassle-free returns. If you're not 100% satisfied, contact us and we'll arrange a return at no cost to you.",
+            },
+            {
+              q: 'How do I start a return?',
+              a: "Email us at hello@pawvault.com with your order number and reason for return. We'll respond within 1 business day with a prepaid return label.",
+            },
+            {
+              q: 'When will I receive my refund?',
+              a: "Refunds are processed within 3–5 business days of receiving your return. You'll receive an email confirmation once the refund is issued.",
+            },
+            {
+              q: 'What if my item arrived damaged?',
+              a: "Please take a photo and email us at hello@pawvault.com. We'll send a replacement immediately at no charge — no return required.",
+            },
+          ].map(item => (
+            <details class="faq-item">
+              <summary class="faq-question">
+                <span>{item.q}</span>
+                <span class="faq-chevron" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="faq-category" aria-labelledby="products-heading">
+        <div class="category-header">
+          <div class="category-icon" aria-hidden="true">
+            <Icon name="sparkles" size={20} color="#2D6A4F" />
+          </div>
+          <h2 id="products-heading">Products and Quality</h2>
+        </div>
+        <div class="faq-list">
+          {[
+            {
+              q: 'How do you choose which products to sell?',
+              a: 'Every product goes through our AI-powered research process: we analyze supplier options, review safety data, and check customer reviews before anything is shortlisted. Most products we evaluate never make it to the store.',
+            },
+            {
+              q: 'Are your products safe for pets?',
+              a: 'Pet safety is our top priority. We only list products that are free from harmful chemicals, use non-toxic materials, and have been verified safe for the relevant species and size.',
+            },
+            {
+              q: 'Can I suggest a product?',
+              a: 'Absolutely! We love suggestions from our community. Email us at hello@pawvault.com with the product idea and we will run it through our vetting process.',
+            },
+            {
+              q: 'Do the products work as described?',
+              a: "We stand behind everything we sell. Our 30-day return policy exists because we're confident — but if anything doesn't work as described, we'll make it right immediately.",
+            },
+          ].map(item => (
+            <details class="faq-item">
+              <summary class="faq-question">
+                <span>{item.q}</span>
+                <span class="faq-chevron" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="faq-category" aria-labelledby="payment-heading">
+        <div class="category-header">
+          <div class="category-icon" aria-hidden="true">
+            <Icon name="lock" size={20} color="#2D6A4F" />
+          </div>
+          <h2 id="payment-heading">Payments and Security</h2>
+        </div>
+        <div class="faq-list">
+          {[
+            {
+              q: 'What payment methods do you accept?',
+              a: 'We accept all major credit cards (Visa, Mastercard, American Express, Discover), PayPal, Apple Pay, and Google Pay.',
+            },
+            {
+              q: 'Is my payment information secure?',
+              a: 'Yes. All transactions are processed through SSL-encrypted connections. We never store your full payment details — they go directly to our payment processor.',
+            },
+            {
+              q: 'Will I be charged sales tax?',
+              a: 'Sales tax is calculated based on your delivery address and applied at checkout in accordance with applicable state laws.',
+            },
+          ].map(item => (
+            <details class="faq-item">
+              <summary class="faq-question">
+                <span>{item.q}</span>
+                <span class="faq-chevron" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+    </div>
+
+    <div class="contact-cta">
+      <div class="contact-cta-icon" aria-hidden="true">
+        <Icon name="mail" size={24} color="#2D6A4F" />
+      </div>
+      <h2>Still have questions?</h2>
+      <p>Our team responds to every email within 1 business day.</p>
+      <a href="mailto:hello@pawvault.com" class="btn-primary">Email us</a>
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  :root {
+    --green: #2D6A4F;
+    --cream: #FFF9F0;
+    --terra: #C9663C;
+    --dark: #0F1117;
+    --gray: #6B7280;
+    --border: #E8E3DB;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .page-inner { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+
+  .page-hero { text-align: center; margin-bottom: 64px; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(45,106,79,0.07);
+    color: var(--green);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .page-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--dark);
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .page-hero p { font-size: 1rem; color: var(--gray); line-height: 1.65; }
+  .page-hero a { color: var(--green); font-weight: 500; }
+
+  .faq-grid { display: flex; flex-direction: column; gap: 48px; }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .category-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(45,106,79,0.07);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .category-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    color: var(--dark);
+    letter-spacing: -0.01em;
+  }
+
+  .faq-list { display: flex; flex-direction: column; }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    background: white;
+  }
+  .faq-item:first-child {
+    border-top: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+  }
+  .faq-item:last-child { border-radius: 0 0 12px 12px; }
+
+  .faq-question {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--dark);
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question:hover { background: var(--cream); }
+
+  .faq-chevron {
+    color: var(--gray);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+  details[open] .faq-chevron { transform: rotate(180deg); }
+
+  .faq-answer {
+    padding: 0 20px 18px;
+    font-size: 0.9rem;
+    color: #4B5563;
+    line-height: 1.75;
+  }
+
+  .contact-cta {
+    margin-top: 72px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .contact-cta-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(45,106,79,0.08);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+  }
+  .contact-cta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .contact-cta p { color: var(--gray); font-size: 0.95rem; margin-bottom: 24px; }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    background: var(--green);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(45,106,79,0.25);
+  }
+  .btn-primary:hover { background: #235c43; transform: translateY(-1px); }
+
+  @media (max-width: 640px) {
+    .page-inner { padding: 40px 16px 72px; }
+    .contact-cta { padding: 32px 20px; }
+  }
+</style>

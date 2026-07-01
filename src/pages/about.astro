@@ -1,0 +1,285 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icons.astro';
+---
+
+<Layout title="About PawVault" description="The story behind PawVault — premium pet accessories curated with love.">
+  <div class="page-inner">
+
+    <div class="hero-section">
+      <div class="hero-eyebrow">
+        <Icon name="sparkles" size={13} color="#2D6A4F" aria-hidden={true} />
+        <span>Our story</span>
+      </div>
+      <h1>About <em>PawVault</em></h1>
+      <p class="subtitle">We believe every pet deserves the best.</p>
+    </div>
+
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Why we built this</h2>
+        <p>PawVault was born from a simple frustration: finding genuinely great pet accessories that were affordable, safe, and actually worked as advertised.</p>
+        <p>We use AI to research and score pet products — analyzing margins, reviews, and safety — so you only ever see the best. Every product in our store has been vetted for quality and value.</p>
+        <p>We're pet parents ourselves. We care about what goes near our animals, and we bring that same care to every product we list.</p>
+      </div>
+      <div class="story-stats" role="list" aria-label="Store policies">
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon" aria-hidden="true">
+            <Icon name="sparkles" size={20} color="#2D6A4F" />
+          </div>
+          <span class="stat-number">100%</span>
+          <span class="stat-label">AI-curated products</span>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon" aria-hidden="true">
+            <Icon name="refresh" size={20} color="#2D6A4F" />
+          </div>
+          <span class="stat-number">30-day</span>
+          <span class="stat-label">Return policy</span>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon" aria-hidden="true">
+            <Icon name="truck" size={20} color="#2D6A4F" />
+          </div>
+          <span class="stat-number">Free</span>
+          <span class="stat-label">Shipping $35+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="values-section">
+      <div class="values-header">
+        <p class="section-eyebrow">Our values</p>
+        <h2>What we stand for</h2>
+      </div>
+      <div class="values-grid" role="list">
+        <article class="value-card" role="listitem">
+          <div class="value-icon-wrap" aria-hidden="true">
+            <Icon name="search" size={22} color="#2D6A4F" />
+          </div>
+          <h3>Radical curation</h3>
+          <p>Most of what we research doesn't make the cut. Only the best make it to the store.</p>
+        </article>
+        <article class="value-card" role="listitem">
+          <div class="value-icon-wrap" aria-hidden="true">
+            <Icon name="shield" size={22} color="#2D6A4F" />
+          </div>
+          <h3>Pet safety first</h3>
+          <p>Every product is reviewed for pet safety before listing. No compromises.</p>
+        </article>
+        <article class="value-card" role="listitem">
+          <div class="value-icon-wrap" aria-hidden="true">
+            <Icon name="dollar" size={22} color="#2D6A4F" />
+          </div>
+          <h3>Fair pricing</h3>
+          <p>Premium quality doesn't have to mean premium prices. We keep it accessible.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="cta-block">
+      <div class="cta-icon" aria-hidden="true">
+        <Icon name="paw" size={28} color="#2D6A4F" />
+      </div>
+      <h2>Ready to find the perfect accessory?</h2>
+      <p>Explore our full catalog of AI-curated pet essentials.</p>
+      <a href="/products" class="btn-primary">
+        <span>Browse the store</span>
+        <Icon name="arrowRight" size={16} color="#FFF9F0" aria-hidden={true} />
+      </a>
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  :root {
+    --green: #2D6A4F;
+    --cream: #FFF9F0;
+    --terra: #C9663C;
+    --dark: #0F1117;
+    --gray: #6B7280;
+    --border: #E8E3DB;
+    --radius: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .page-inner { max-width: 1000px; margin: 0 auto; padding: 72px 24px 96px; }
+
+  /* Hero */
+  .hero-section { text-align: center; margin-bottom: 88px; }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(45,106,79,0.07);
+    color: var(--green);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero-section h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    color: var(--dark);
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  .hero-section h1 em { color: var(--green); font-style: italic; }
+  .subtitle { font-size: 1.15rem; color: var(--gray); }
+
+  /* Story */
+  .story-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+    margin-bottom: 88px;
+    padding-bottom: 88px;
+    border-bottom: 1px solid var(--border);
+  }
+  .story-text h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    color: var(--dark);
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+  }
+  .story-text p {
+    color: #4B5563;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    font-size: 0.97rem;
+  }
+
+  .story-stats { display: flex; flex-direction: column; gap: 16px; }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+  .stat-card:hover { box-shadow: var(--shadow-md); }
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(45,106,79,0.07);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.88rem; color: var(--gray); }
+
+  /* Values */
+  .values-header { text-align: center; margin-bottom: 48px; }
+  .section-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+  .values-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--dark);
+    letter-spacing: -0.02em;
+  }
+  .values-section { margin-bottom: 88px; }
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .value-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    transition: box-shadow 0.2s;
+  }
+  .value-card:hover { box-shadow: var(--shadow-md); }
+  .value-icon-wrap {
+    width: 48px;
+    height: 48px;
+    background: rgba(45,106,79,0.07);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .value-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: var(--dark); }
+  .value-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.65; }
+
+  /* CTA block */
+  .cta-block {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 56px;
+    text-align: center;
+  }
+  .cta-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(45,106,79,0.08);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .cta-block h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.85rem;
+    letter-spacing: -0.02em;
+    color: var(--dark);
+    margin-bottom: 12px;
+  }
+  .cta-block p { color: var(--gray); margin-bottom: 28px; }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green);
+    color: white;
+    padding: 13px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(45,106,79,0.25);
+  }
+  .btn-primary:hover { background: #235c43; transform: translateY(-1px); }
+
+  @media (max-width: 768px) {
+    .story-section { grid-template-columns: 1fr; gap: 40px; }
+    .values-grid { grid-template-columns: 1fr; }
+    .cta-block { padding: 36px 24px; }
+    .hero-section h1 { font-size: 2rem; }
+  }
+</style>

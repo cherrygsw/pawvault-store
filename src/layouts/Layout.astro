@@ -1,22 +1,609 @@
+---
+import Icon from '../components/Icons.astro';
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalUrl?: string;
+}
+const {
+  title = 'PawVault',
+  description = 'Premium pet accessories for cats & dogs — AI-curated, vet-approved, delivered fast.',
+  image = '/favicon.png',
+  canonicalUrl,
+} = Astro.props;
+const fullTitle = title === 'PawVault' ? 'PawVault — Premium Pet Accessories' : `${title} | PawVault`;
+const siteUrl = 'https://paw-vault-33e6b0b5-cherrygsw.wix-site-host.com';
+const ogImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
+---
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Wix Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="PawVault" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- JSON-LD Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "PawVault",
+      "url": "https://paw-vault-33e6b0b5-cherrygsw.wix-site-host.com",
+      "logo": "https://paw-vault-33e6b0b5-cherrygsw.wix-site-host.com/favicon.png",
+      "description": "Premium pet accessories for cats and dogs — AI-curated for quality, safety, and value.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "hello@pawvault.com"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <div class="announcement-bar" role="banner" aria-label="Promotion">
+      <p>
+        <span class="ann-dot" aria-hidden="true"></span>
+        Free shipping on orders $35+ &nbsp;·&nbsp; 30-day hassle-free returns
+        <span class="ann-dot" aria-hidden="true"></span>
+      </p>
+    </div>
+
+    <nav aria-label="Main navigation">
+      <div class="nav-inner">
+        <a href="/" class="logo" aria-label="PawVault home">
+          <img src="/logo-dark.png" alt="PawVault" class="logo-img" />
+        </a>
+
+        <div class="nav-links" role="list">
+          <a href="/products" role="listitem">Shop</a>
+          <a href="/quiz" role="listitem" class="nav-quiz-link">
+            <Icon name="sparkles" size={13} color="#C9663C" aria-hidden={true} />
+            <span>Pet Quiz</span>
+          </a>
+          <a href="/about" role="listitem">About</a>
+          <a href="/faq" role="listitem">FAQ</a>
+        </div>
+
+        <div class="nav-right">
+          <a href="/cart" class="cart-btn" aria-label="Shopping cart">
+            <Icon name="cart" size={18} color="#FFF9F0" aria-hidden={true} />
+            <span>Cart</span>
+          </a>
+          <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile drawer -->
+    <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true" role="dialog" aria-label="Navigation menu">
+      <div class="drawer-overlay" id="drawer-overlay"></div>
+      <nav class="drawer-panel" aria-label="Mobile navigation">
+        <div class="drawer-header">
+          <img src="/logo-dark.png" alt="PawVault" class="drawer-logo" />
+          <button class="drawer-close" id="drawer-close" aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="drawer-links">
+          <a href="/products">Shop All Products</a>
+          <a href="/quiz" class="drawer-quiz-link">
+            <Icon name="sparkles" size={15} color="#C9663C" aria-hidden={true} />
+            <span>AI Pet Quiz</span>
+            <span class="drawer-badge">New</span>
+          </a>
+          <a href="/about">Our Story</a>
+          <a href="/faq">FAQ</a>
+        </div>
+        <div class="drawer-footer">
+          <a href="/cart" class="drawer-cart-btn">
+            <Icon name="cart" size={16} color="#FFF9F0" aria-hidden={true} />
+            View Cart
+          </a>
+          <p class="drawer-trust">Free shipping $35+ · 30-day returns</p>
+        </div>
+      </nav>
+    </div>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="/" class="logo footer-logo" aria-label="PawVault home">
+            <img src="/logo-light.png" alt="PawVault" class="logo-img logo-img--footer" />
+          </a>
+          <p>Premium pet accessories curated by AI, loved by pets.</p>
+          <div class="footer-social" aria-label="Social links">
+            <a href="https://tiktok.com/@pawvault" aria-label="TikTok" target="_blank" rel="noopener noreferrer" class="social-link">TikTok</a>
+            <span>·</span>
+            <a href="https://instagram.com/pawvault" aria-label="Instagram" target="_blank" rel="noopener noreferrer" class="social-link">Instagram</a>
+          </div>
+        </div>
+        <nav aria-label="Footer navigation">
+          <p class="footer-nav-label">Store</p>
+          <ul>
+            <li><a href="/products">Shop All</a></li>
+            <li><a href="/quiz">Pet Quiz</a></li>
+            <li><a href="/about">Our Story</a></li>
+            <li><a href="/faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <div class="footer-trust">
+          <p class="footer-nav-label">We stand by</p>
+          <ul>
+            <li>
+              <Icon name="shield" size={14} color="#6B7280" aria-hidden={true} />
+              <span>Secure checkout</span>
+            </li>
+            <li>
+              <Icon name="refresh" size={14} color="#6B7280" aria-hidden={true} />
+              <span>30-day returns</span>
+            </li>
+            <li>
+              <Icon name="truck" size={14} color="#6B7280" aria-hidden={true} />
+              <span>Free shipping $35+</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 PawVault. All rights reserved. &nbsp;·&nbsp; <a href="/faq">Help Center</a></p>
+      </div>
+    </footer>
+
+    <script>
+      // ── Mobile Hamburger ──────────────────────────────────────────
+      const btn      = document.getElementById('hamburger-btn')!;
+      const drawer   = document.getElementById('mobile-drawer')!;
+      const overlay  = document.getElementById('drawer-overlay')!;
+      const closeBtn = document.getElementById('drawer-close')!;
+
+      function openDrawer() {
+        drawer.setAttribute('aria-hidden', 'false');
+        btn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        btn.classList.add('is-open');
+      }
+      function closeDrawer() {
+        drawer.setAttribute('aria-hidden', 'true');
+        btn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        btn.classList.remove('is-open');
+      }
+      btn.addEventListener('click', openDrawer);
+      closeBtn.addEventListener('click', closeDrawer);
+      overlay.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDrawer();
+      });
+    </script>
+  </body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #2D6A4F;
+    --green-hover: #235c43;
+    --cream: #FFF9F0;
+    --terra: #C9663C;
+    --dark: #0F1117;
+    --gray: #6B7280;
+    --border: #E8E3DB;
+    --surface: #FFFFFF;
+    --radius: 12px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  #main-content { flex: 1; }
+
+  /* ── Skip link ── */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--green);
+    color: white;
+    padding: 8px 16px;
+    z-index: 999;
+    border-radius: 0 0 8px 0;
+    transition: top 0.2s;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* ── Announcement bar ── */
+  .announcement-bar {
+    background: var(--terra);
+    padding: 9px 24px;
+    text-align: center;
+  }
+  .announcement-bar p {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,249,240,0.95);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .ann-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,249,240,0.5);
+    flex-shrink: 0;
+  }
+
+  /* ── Nav ── */
+  nav {
+    background: var(--green);
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.08), 0 4px 20px rgba(0,0,0,0.18);
+  }
+
+  .nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 24px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo-img {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.15s;
+  }
+  .logo:hover .logo-img { opacity: 0.88; }
+  .logo-img--footer { height: 30px; }
+
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,249,240,0.75);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .nav-links a:hover {
+    color: var(--cream);
+    background: rgba(255,249,240,0.1);
+  }
+  .nav-quiz-link { color: rgba(255,249,240,0.9) !important; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .cart-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,249,240,0.12);
+    border: 1px solid rgba(255,249,240,0.2);
+    color: var(--cream);
+    padding: 7px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .cart-btn:hover {
+    background: rgba(255,249,240,0.2);
+    border-color: rgba(255,249,240,0.35);
+  }
+
+  /* ── Hamburger ── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .hamburger:hover { background: rgba(255,249,240,0.1); }
+  .hamburger-line {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--cream);
+    border-radius: 2px;
+    transition: transform 0.25s, opacity 0.25s;
+    transform-origin: center;
+  }
+  .hamburger.is-open .hamburger-line:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .hamburger.is-open .hamburger-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.is-open .hamburger-line:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* ── Mobile drawer ── */
+  .mobile-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    pointer-events: none;
+  }
+  .mobile-drawer[aria-hidden="false"] { pointer-events: auto; }
+
+  .drawer-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15,17,23,0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-drawer[aria-hidden="false"] .drawer-overlay { opacity: 1; }
+
+  .drawer-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(320px, 88vw);
+    background: white;
+    box-shadow: -8px 0 48px rgba(0,0,0,0.16);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .mobile-drawer[aria-hidden="false"] .drawer-panel { transform: translateX(0); }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+  .drawer-logo { height: 30px; width: auto; }
+  .drawer-close {
+    background: rgba(255,249,240,0.12);
+    border: 1px solid rgba(255,249,240,0.2);
+    border-radius: 8px;
+    padding: 7px;
+    cursor: pointer;
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .drawer-close:hover { background: rgba(255,249,240,0.22); }
+
+  .drawer-links {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    flex: 1;
+  }
+  .drawer-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--dark);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .drawer-links a:hover { background: var(--cream); }
+  .drawer-links a:last-child { border-bottom: none; }
+  .drawer-quiz-link { color: var(--green) !important; font-weight: 600 !important; }
+  .drawer-badge {
+    margin-left: auto;
+    background: var(--terra);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+  }
+
+  .drawer-footer {
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .drawer-cart-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green);
+    color: var(--cream);
+    padding: 13px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    justify-content: center;
+    margin-bottom: 12px;
+    transition: background 0.15s;
+  }
+  .drawer-cart-btn:hover { background: var(--green-hover); }
+  .drawer-trust {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+
+  /* ── Footer ── */
+  footer {
+    background: #FAFAF9;
+    border-top: 1px solid var(--border);
+    padding: 56px 32px 24px;
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .footer-logo { text-decoration: none; margin-bottom: 12px; display: inline-flex; }
+  .footer-brand p {
+    margin-top: 12px;
+    color: var(--gray);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    max-width: 260px;
+  }
+  .footer-social {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--gray);
+  }
+  .social-link {
+    color: var(--green);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  .social-link:hover { color: var(--dark); }
+
+  .footer-nav-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dark);
+    margin-bottom: 16px;
+  }
+
+  footer nav ul, .footer-trust ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  footer nav a {
+    color: var(--gray);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.15s;
+  }
+  footer nav a:hover { color: var(--dark); }
+
+  .footer-trust li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gray);
+    font-size: 0.875rem;
+  }
+
+  .footer-bottom {
+    max-width: 1280px;
+    margin: 24px auto 0;
+    text-align: center;
+    color: #9CA3AF;
+    font-size: 0.8rem;
+  }
+  .footer-bottom a { color: var(--gray); text-decoration: none; }
+  .footer-bottom a:hover { color: var(--dark); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+    footer { padding: 40px 20px 20px; }
+    .ann-dot { display: none; }
+  }
 </style>

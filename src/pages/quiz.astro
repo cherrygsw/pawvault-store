@@ -1,0 +1,716 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icons.astro';
+---
+
+<Layout
+  title="AI Pet Quiz"
+  description="Answer 5 quick questions and get a personalized product recommendation for your pet in 60 seconds."
+>
+  <div class="quiz-page">
+
+    <div class="quiz-header">
+      <div class="quiz-header-badge">
+        <Icon name="sparkles" size={13} color="#C9663C" aria-hidden={true} />
+        <span>Takes 60 seconds</span>
+      </div>
+      <h1>Find the perfect product<br/>for your pet</h1>
+      <p>Tell us a little about your pet and we'll recommend the best products from our store.</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap" aria-label="Quiz progress">
+      <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-label" id="progress-label">Step 1 of 5</span>
+    </div>
+
+    <!-- Quiz steps -->
+    <div class="quiz-container" id="quiz-container">
+
+      <!-- Step 1: Pet type -->
+      <div class="quiz-step active" data-step="1">
+        <h2>What kind of pet do you have?</h2>
+        <div class="option-grid">
+          <button class="option-card" data-key="pet" data-value="cat">
+            <span class="option-emoji" aria-hidden="true">🐱</span>
+            <span class="option-label">Cat</span>
+          </button>
+          <button class="option-card" data-key="pet" data-value="dog">
+            <span class="option-emoji" aria-hidden="true">🐶</span>
+            <span class="option-label">Dog</span>
+          </button>
+          <button class="option-card" data-key="pet" data-value="both">
+            <span class="option-emoji" aria-hidden="true">🐾</span>
+            <span class="option-label">Both!</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Size / breed type -->
+      <div class="quiz-step" data-step="2">
+        <h2 id="step2-heading">How big is your pet?</h2>
+        <div class="option-grid">
+          <button class="option-card" data-key="size" data-value="small">
+            <span class="option-emoji" aria-hidden="true">🐣</span>
+            <span class="option-label">Small</span>
+            <span class="option-sub">Under 15 lbs</span>
+          </button>
+          <button class="option-card" data-key="size" data-value="medium">
+            <span class="option-emoji" aria-hidden="true">🐕</span>
+            <span class="option-label">Medium</span>
+            <span class="option-sub">15 – 50 lbs</span>
+          </button>
+          <button class="option-card" data-key="size" data-value="large">
+            <span class="option-emoji" aria-hidden="true">🦮</span>
+            <span class="option-label">Large</span>
+            <span class="option-sub">50+ lbs</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Age -->
+      <div class="quiz-step" data-step="3">
+        <h2>How old is your pet?</h2>
+        <div class="option-grid">
+          <button class="option-card" data-key="age" data-value="puppy">
+            <span class="option-emoji" aria-hidden="true">🍼</span>
+            <span class="option-label">Puppy / Kitten</span>
+            <span class="option-sub">Under 1 year</span>
+          </button>
+          <button class="option-card" data-key="age" data-value="adult">
+            <span class="option-emoji" aria-hidden="true">💪</span>
+            <span class="option-label">Adult</span>
+            <span class="option-sub">1 – 7 years</span>
+          </button>
+          <button class="option-card" data-key="age" data-value="senior">
+            <span class="option-emoji" aria-hidden="true">🧘</span>
+            <span class="option-label">Senior</span>
+            <span class="option-sub">7+ years</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Activity level -->
+      <div class="quiz-step" data-step="4">
+        <h2>How active is your pet?</h2>
+        <div class="option-grid">
+          <button class="option-card" data-key="activity" data-value="couch">
+            <span class="option-emoji" aria-hidden="true">🛋️</span>
+            <span class="option-label">Couch potato</span>
+            <span class="option-sub">Loves naps</span>
+          </button>
+          <button class="option-card" data-key="activity" data-value="moderate">
+            <span class="option-emoji" aria-hidden="true">🚶</span>
+            <span class="option-label">Moderately active</span>
+            <span class="option-sub">Daily walks</span>
+          </button>
+          <button class="option-card" data-key="activity" data-value="active">
+            <span class="option-emoji" aria-hidden="true">🏃</span>
+            <span class="option-label">Very active</span>
+            <span class="option-sub">Runs, hikes, plays</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5: Main concern -->
+      <div class="quiz-step" data-step="5">
+        <h2>What matters most to you right now?</h2>
+        <div class="option-grid option-grid--2col">
+          <button class="option-card" data-key="goal" data-value="play">
+            <span class="option-emoji" aria-hidden="true">🎯</span>
+            <span class="option-label">Enrichment & play</span>
+          </button>
+          <button class="option-card" data-key="goal" data-value="grooming">
+            <span class="option-emoji" aria-hidden="true">✨</span>
+            <span class="option-label">Grooming & hygiene</span>
+          </button>
+          <button class="option-card" data-key="goal" data-value="travel">
+            <span class="option-emoji" aria-hidden="true">✈️</span>
+            <span class="option-label">Travel & outdoors</span>
+          </button>
+          <button class="option-card" data-key="goal" data-value="comfort">
+            <span class="option-emoji" aria-hidden="true">💤</span>
+            <span class="option-label">Comfort & wellness</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="quiz-step" data-step="6" id="results-step">
+        <div class="results-header">
+          <div class="results-icon" aria-hidden="true">
+            <Icon name="sparkles" size={28} color="#C9663C" />
+          </div>
+          <h2>Your personalized picks</h2>
+          <p id="results-subtitle">Based on your pet's profile, here are our top recommendations:</p>
+        </div>
+        <div class="results-grid" id="results-grid" role="list">
+          <!-- Filled by JS -->
+        </div>
+        <div class="results-actions">
+          <a href="/products" class="btn-primary">
+            <Icon name="paw" size={16} color="#FFF9F0" aria-hidden={true} />
+            <span>Browse all products</span>
+          </a>
+          <button class="btn-restart" id="btn-restart">
+            <Icon name="refresh" size={14} color="#2D6A4F" aria-hidden={true} />
+            <span>Retake quiz</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Back button -->
+    <button class="btn-back" id="btn-back" style="display:none" aria-label="Go to previous question">
+      <Icon name="arrowLeft" size={14} color="#6B7280" aria-hidden={true} />
+      Back
+    </button>
+
+  </div>
+</Layout>
+
+<script>
+// ── Quiz State ────────────────────────────────────────────────
+interface QuizAnswers {
+  pet?: string;
+  size?: string;
+  age?: string;
+  activity?: string;
+  goal?: string;
+}
+
+const answers: QuizAnswers = {};
+let currentStep = 1;
+const totalSteps = 5;
+
+const steps = document.querySelectorAll<HTMLElement>('.quiz-step');
+const progressFill = document.getElementById('progress-fill')!;
+const progressLabel = document.getElementById('progress-label')!;
+const btnBack = document.getElementById('btn-back')!;
+
+function showStep(n: number) {
+  steps.forEach(s => s.classList.remove('active', 'exit'));
+  const target = document.querySelector<HTMLElement>(`.quiz-step[data-step="${n}"]`);
+  if (target) target.classList.add('active');
+
+  const pct = n > totalSteps ? 100 : Math.round(((n - 1) / totalSteps) * 100);
+  progressFill.style.width = `${pct}%`;
+  progressLabel.textContent = n > totalSteps ? 'Complete!' : `Step ${n} of ${totalSteps}`;
+  btnBack.style.display = n > 1 ? 'flex' : 'none';
+
+  // Dynamic heading for step 2
+  if (n === 2 && answers.pet === 'cat') {
+    document.getElementById('step2-heading')!.textContent = 'How big is your cat?';
+  } else if (n === 2) {
+    document.getElementById('step2-heading')!.textContent = 'How big is your pet?';
+  }
+}
+
+// ── Product catalog (mapped from quiz answers) ────────────────
+interface Product {
+  name: string;
+  price: string;
+  reason: string;
+  icon: string;
+  tags: string[];
+  href: string;
+}
+
+const catalog: Product[] = [
+  {
+    name: 'Automatic Laser Cat Toy',
+    price: '$24.99',
+    reason: 'Perfect for independent playtime — keeps cats entertained for hours',
+    icon: 'zap',
+    tags: ['cat', 'play', 'any-size'],
+    href: '/products',
+  },
+  {
+    name: 'Deshedding Grooming Glove',
+    price: '$14.99',
+    reason: 'Gentle grooming that feels like a massage — works for all coat types',
+    icon: 'sparkles',
+    tags: ['grooming', 'both', 'dog'],
+    href: '/products',
+  },
+  {
+    name: 'Pet Paw Cleaner Cup',
+    price: '$18.99',
+    reason: 'After-walk muddy paw cleanup in 10 seconds — a game changer for active pets',
+    icon: 'heart',
+    tags: ['dog', 'travel', 'active', 'moderate'],
+    href: '/products',
+  },
+  {
+    name: 'Collapsible Travel Water Bowl',
+    price: '$12.99',
+    reason: 'Lightweight and packable — essential for hikes and road trips',
+    icon: 'package',
+    tags: ['travel', 'active', 'dog', 'both'],
+    href: '/products',
+  },
+  {
+    name: 'Slow-Feeder Enrichment Mat',
+    price: '$19.99',
+    reason: 'Keeps senior and calm pets mentally stimulated without overexertion',
+    icon: 'heart',
+    tags: ['couch', 'comfort', 'senior', 'both', 'dog'],
+    href: '/products',
+  },
+  {
+    name: 'Cat Wall-Mount Shelves Set',
+    price: '$34.99',
+    reason: 'Gives cats vertical territory and safe climbing spaces — reduces anxiety',
+    icon: 'paw',
+    tags: ['cat', 'play', 'comfort'],
+    href: '/products',
+  },
+  {
+    name: 'Reflective Adjustable Harness',
+    price: '$22.99',
+    reason: 'Safe, comfortable fit for active dogs — reflective strips for evening walks',
+    icon: 'shield',
+    tags: ['dog', 'active', 'travel', 'moderate'],
+    href: '/products',
+  },
+  {
+    name: 'Interactive Puzzle Feeder',
+    price: '$27.99',
+    reason: 'Stimulates problem-solving — great for high-energy pets who need a challenge',
+    icon: 'sparkles',
+    tags: ['play', 'active', 'moderate', 'dog', 'cat', 'adult', 'puppy'],
+    href: '/products',
+  },
+  {
+    name: 'Orthopedic Pet Bed',
+    price: '$49.99',
+    reason: 'Pressure-relief memory foam — essential comfort for senior or large pets',
+    icon: 'heart',
+    tags: ['comfort', 'senior', 'large', 'couch'],
+    href: '/products',
+  },
+];
+
+function scoreProduct(p: Product, a: QuizAnswers): number {
+  let score = 0;
+  if (a.pet && p.tags.includes(a.pet)) score += 3;
+  if (a.goal && p.tags.includes(a.goal)) score += 3;
+  if (a.activity && p.tags.includes(a.activity)) score += 2;
+  if (a.age && p.tags.includes(a.age)) score += 1;
+  if (a.size && p.tags.includes(a.size)) score += 1;
+  return score;
+}
+
+function getRecommendations(a: QuizAnswers): Product[] {
+  return [...catalog]
+    .map(p => ({ product: p, score: scoreProduct(p, a) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.product);
+}
+
+// ── Icon SVG inline helper ────────────────────────────────────
+const iconPaths: Record<string, string> = {
+  zap: '<path d="M13 2L4.5 13.5H11L9 22L18.5 10.5H12L14 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  sparkles: '<path d="M12 3L13.5 7.5L18 9L13.5 10.5L12 15L10.5 10.5L6 9L10.5 7.5L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M19 16L19.75 18.25L22 19L19.75 19.75L19 22L18.25 19.75L16 19L18.25 18.25L19 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
+  heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="1.5"/>',
+  package: '<path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.5"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/>',
+  paw: '<circle cx="7" cy="4.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="4.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="19.5" cy="9" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M12 21c-4 0-7-2.5-7-6.5 0-2.5 1.5-4.5 3.5-5.5h7c2 1 3.5 3 3.5 5.5 0 4-3 6.5-7 6.5z" stroke="currentColor" stroke-width="1.5"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5"/>',
+};
+
+function makeIcon(name: string): string {
+  const path = iconPaths[name] ?? iconPaths['paw'];
+  return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${path}</svg>`;
+}
+
+function showResults() {
+  const recs = getRecommendations(answers);
+  const grid = document.getElementById('results-grid')!;
+  const subtitle = document.getElementById('results-subtitle')!;
+
+  const petLabel = answers.pet === 'cat' ? 'cat' : answers.pet === 'dog' ? 'dog' : 'pets';
+  subtitle.textContent = `Based on your ${petLabel}'s profile, here are our top picks:`;
+
+  grid.innerHTML = recs.map(p => `
+    <a href="${p.href}" class="result-card" role="listitem">
+      <div class="result-icon-wrap" aria-hidden="true">
+        ${makeIcon(p.icon)}
+      </div>
+      <div class="result-info">
+        <h3>${p.name}</h3>
+        <p class="result-reason">${p.reason}</p>
+        <div class="result-footer">
+          <span class="result-price">${p.price}</span>
+          <span class="result-stars" aria-hidden="true">★★★★★</span>
+        </div>
+      </div>
+      <div class="result-arrow" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </a>
+  `).join('');
+
+  showStep(6);
+}
+
+// ── Event listeners ───────────────────────────────────────────
+document.querySelectorAll<HTMLButtonElement>('.option-card').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const step = parseInt(btn.closest<HTMLElement>('.quiz-step')!.dataset.step!);
+    const key = btn.dataset.key as keyof QuizAnswers;
+    const value = btn.dataset.value!;
+
+    // Deselect siblings
+    btn.closest('.option-grid')!.querySelectorAll('.option-card').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    answers[key] = value;
+
+    // Advance after brief pause
+    setTimeout(() => {
+      if (step >= totalSteps) {
+        showResults();
+      } else {
+        currentStep = step + 1;
+        showStep(currentStep);
+      }
+    }, 220);
+  });
+});
+
+btnBack.addEventListener('click', () => {
+  if (currentStep > 1) {
+    currentStep--;
+    showStep(currentStep);
+  }
+});
+
+document.getElementById('btn-restart')?.addEventListener('click', () => {
+  Object.keys(answers).forEach(k => delete (answers as any)[k]);
+  currentStep = 1;
+  document.querySelectorAll('.option-card').forEach(b => b.classList.remove('selected'));
+  showStep(1);
+});
+
+// Init
+showStep(1);
+</script>
+
+<style>
+  :root {
+    --green: #2D6A4F;
+    --cream: #FFF9F0;
+    --terra: #C9663C;
+    --dark: #0F1117;
+    --gray: #6B7280;
+    --border: #E8E3DB;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .quiz-page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+
+  .quiz-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .quiz-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(201,102,60,0.08);
+    color: var(--terra);
+    border: 1px solid rgba(201,102,60,0.2);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+  .quiz-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    color: var(--dark);
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    line-height: 1.15;
+  }
+  .quiz-header p {
+    font-size: 1rem;
+    color: var(--gray);
+    line-height: 1.65;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gray);
+    white-space: nowrap;
+  }
+
+  /* Steps */
+  .quiz-container { position: relative; min-height: 320px; }
+  .quiz-step {
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+  .quiz-step.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .quiz-step h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+    color: var(--dark);
+    letter-spacing: -0.01em;
+    margin-bottom: 28px;
+  }
+
+  /* Option grid */
+  .option-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .option-grid--2col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .option-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s, background 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+  }
+  .option-card:hover {
+    border-color: var(--green);
+    box-shadow: 0 4px 16px rgba(45,106,79,0.12);
+    transform: translateY(-2px);
+  }
+  .option-card.selected {
+    border-color: var(--green);
+    background: rgba(45,106,79,0.04);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
+  }
+  .option-emoji {
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .option-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark);
+  }
+  .option-sub {
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+
+  /* Results */
+  .results-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .results-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(201,102,60,0.08);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .results-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    color: var(--dark);
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .results-header p {
+    color: var(--gray);
+    font-size: 0.95rem;
+  }
+
+  .results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .result-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: var(--dark);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(45,106,79,0.3);
+  }
+  .result-icon-wrap {
+    width: 52px;
+    height: 52px;
+    background: rgba(45,106,79,0.07);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+  .result-info { flex: 1; min-width: 0; }
+  .result-info h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+  .result-reason {
+    font-size: 0.82rem;
+    color: var(--gray);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .result-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .result-price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .result-stars {
+    color: #F59E0B;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+  .result-arrow {
+    color: var(--gray);
+    flex-shrink: 0;
+    transition: transform 0.15s, color 0.15s;
+  }
+  .result-card:hover .result-arrow {
+    transform: translateX(3px);
+    color: var(--green);
+  }
+
+  .results-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green);
+    color: white;
+    padding: 13px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(45,106,79,0.25);
+  }
+  .btn-primary:hover { background: #235c43; transform: translateY(-1px); }
+
+  .btn-restart {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--gray);
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-restart:hover { border-color: var(--gray); color: var(--dark); }
+
+  /* Back button */
+  .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--gray);
+    font-family: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 8px 4px;
+    margin-top: 20px;
+    transition: color 0.15s;
+  }
+  .btn-back:hover { color: var(--dark); }
+
+  @media (max-width: 560px) {
+    .quiz-page { padding: 40px 16px 72px; }
+    .option-grid { grid-template-columns: 1fr; }
+    .option-grid--2col { grid-template-columns: 1fr; }
+    .result-card { flex-wrap: wrap; }
+  }
+</style>
