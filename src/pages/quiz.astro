@@ -1,6 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icons.astro';
+import { getWixProductsClient } from '../lib/wixProductsClient';
+import { resolveWixImage } from '../lib/wixImage';
+
+let quizProducts: any[] = [];
+try {
+  const result = await getWixProductsClient().productsV3.queryProducts().limit(50).find();
+  quizProducts = (result.items ?? []).map((p: any) => ({
+    name: p.name,
+    slug: p.slug,
+    price: Number(p.actualPriceRange?.minValue?.amount ?? 0).toFixed(2),
+    description: p.plainDescription?.replace(/<[^>]*>/g, '') ?? '',
+    image: p.media?.main?.url ?? resolveWixImage(p.media?.main?.image),
+  }));
+} catch (e) {
+  quizProducts = [];
+}
 ---
 
 <Layout
@@ -17,6 +33,8 @@ import Icon from '../components/Icons.astro';
       <h1>Find the perfect product<br/>for your pet</h1>
       <p>Tell us a little about your pet and we'll recommend the best products from our store.</p>
     </div>
+
+    <div id="quiz-products-data" data-products={JSON.stringify(quizProducts)} style="display:none"></div>
 
     <!-- Progress bar -->
     <div class="progress-wrap" aria-label="Quiz progress">
@@ -209,122 +227,79 @@ function showStep(n: number) {
   }
 }
 
-// ── Product catalog (mapped from quiz answers) ────────────────
+// ── Live product catalog (fetched server-side, matched against quiz answers) ──
 interface Product {
   name: string;
+  slug: string;
   price: string;
-  reason: string;
-  icon: string;
-  tags: string[];
-  href: string;
+  description: string;
+  image: string | null;
 }
 
-const catalog: Product[] = [
-  {
-    name: 'Automatic Laser Cat Toy',
-    price: '$24.99',
-    reason: 'Perfect for independent playtime — keeps cats entertained for hours',
-    icon: 'zap',
-    tags: ['cat', 'play', 'any-size'],
-    href: '/products',
-  },
-  {
-    name: 'Deshedding Grooming Glove',
-    price: '$14.99',
-    reason: 'Gentle grooming that feels like a massage — works for all coat types',
-    icon: 'sparkles',
-    tags: ['grooming', 'both', 'dog'],
-    href: '/products',
-  },
-  {
-    name: 'Pet Paw Cleaner Cup',
-    price: '$18.99',
-    reason: 'After-walk muddy paw cleanup in 10 seconds — a game changer for active pets',
-    icon: 'heart',
-    tags: ['dog', 'travel', 'active', 'moderate'],
-    href: '/products',
-  },
-  {
-    name: 'Collapsible Travel Water Bowl',
-    price: '$12.99',
-    reason: 'Lightweight and packable — essential for hikes and road trips',
-    icon: 'package',
-    tags: ['travel', 'active', 'dog', 'both'],
-    href: '/products',
-  },
-  {
-    name: 'Slow-Feeder Enrichment Mat',
-    price: '$19.99',
-    reason: 'Keeps senior and calm pets mentally stimulated without overexertion',
-    icon: 'heart',
-    tags: ['couch', 'comfort', 'senior', 'both', 'dog'],
-    href: '/products',
-  },
-  {
-    name: 'Cat Wall-Mount Shelves Set',
-    price: '$34.99',
-    reason: 'Gives cats vertical territory and safe climbing spaces — reduces anxiety',
-    icon: 'paw',
-    tags: ['cat', 'play', 'comfort'],
-    href: '/products',
-  },
-  {
-    name: 'Reflective Adjustable Harness',
-    price: '$22.99',
-    reason: 'Safe, comfortable fit for active dogs — reflective strips for evening walks',
-    icon: 'shield',
-    tags: ['dog', 'active', 'travel', 'moderate'],
-    href: '/products',
-  },
-  {
-    name: 'Interactive Puzzle Feeder',
-    price: '$27.99',
-    reason: 'Stimulates problem-solving — great for high-energy pets who need a challenge',
-    icon: 'sparkles',
-    tags: ['play', 'active', 'moderate', 'dog', 'cat', 'adult', 'puppy'],
-    href: '/products',
-  },
-  {
-    name: 'Orthopedic Pet Bed',
-    price: '$49.99',
-    reason: 'Pressure-relief memory foam — essential comfort for senior or large pets',
-    icon: 'heart',
-    tags: ['comfort', 'senior', 'large', 'couch'],
-    href: '/products',
-  },
-];
+const rawProductsEl = document.getElementById('quiz-products-data');
+const catalog: Product[] = rawProductsEl ? JSON.parse(rawProductsEl.dataset.products || '[]') : [];
+
+// Keyword groups used to match quiz answers against each product's own name
+// and description — there's no dedicated pet-attribute tagging on these
+// products yet, so this is a best-effort text match, not a guarantee.
+const keywordGroups: Record<string, string[]> = {
+  cat: ['cat', 'kitten', 'kitty'],
+  dog: ['dog', 'puppy', 'canine'],
+  small: ['small', 'mini', 'compact'],
+  medium: ['medium'],
+  large: ['large', 'big', 'jumbo'],
+  puppy: ['puppy', 'kitten', 'young'],
+  adult: ['adult'],
+  senior: ['senior', 'older', 'aging'],
+  couch: ['calm', 'relax', 'comfort', 'cozy'],
+  moderate: ['walk', 'daily'],
+  active: ['active', 'sport', 'outdoor', 'hike', 'run'],
+  play: ['toy', 'play', 'game', 'fun', 'interactive'],
+  grooming: ['groom', 'brush', 'shed', 'clean', 'bath'],
+  travel: ['travel', 'portable', 'collapsible', 'carrier'],
+  comfort: ['comfort', 'cozy', 'soft', 'bed', 'cushion'],
+};
+
+function matches(text: string, key?: string): boolean {
+  if (!key) return false;
+  const words = keywordGroups[key] ?? [];
+  return words.some(w => text.includes(w));
+}
 
 function scoreProduct(p: Product, a: QuizAnswers): number {
+  const text = `${p.name} ${p.description}`.toLowerCase();
   let score = 0;
-  if (a.pet && p.tags.includes(a.pet)) score += 3;
-  if (a.goal && p.tags.includes(a.goal)) score += 3;
-  if (a.activity && p.tags.includes(a.activity)) score += 2;
-  if (a.age && p.tags.includes(a.age)) score += 1;
-  if (a.size && p.tags.includes(a.size)) score += 1;
+  if (matches(text, a.pet)) score += 3;
+  if (matches(text, a.goal)) score += 3;
+  if (matches(text, a.activity)) score += 2;
+  if (matches(text, a.age)) score += 1;
+  if (matches(text, a.size)) score += 1;
   return score;
 }
 
 function getRecommendations(a: QuizAnswers): Product[] {
-  return [...catalog]
+  // Ties (including all-zero scores, when nothing matched) keep catalog
+  // order, so this still returns real products rather than an empty page.
+  return catalog
     .map(p => ({ product: p, score: scoreProduct(p, a) }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
     .map(x => x.product);
 }
 
-// ── Icon SVG inline helper ────────────────────────────────────
+// ── Icon SVG inline helper (fallback when a product has no image) ─
 const iconPaths: Record<string, string> = {
-  zap: '<path d="M13 2L4.5 13.5H11L9 22L18.5 10.5H12L14 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
-  sparkles: '<path d="M12 3L13.5 7.5L18 9L13.5 10.5L12 15L10.5 10.5L6 9L10.5 7.5L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M19 16L19.75 18.25L22 19L19.75 19.75L19 22L18.25 19.75L16 19L18.25 18.25L19 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
-  heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="1.5"/>',
-  package: '<path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.5"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/>',
   paw: '<circle cx="7" cy="4.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="4.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="19.5" cy="9" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M12 21c-4 0-7-2.5-7-6.5 0-2.5 1.5-4.5 3.5-5.5h7c2 1 3.5 3 3.5 5.5 0 4-3 6.5-7 6.5z" stroke="currentColor" stroke-width="1.5"/>',
-  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5"/>',
 };
 
-function makeIcon(name: string): string {
-  const path = iconPaths[name] ?? iconPaths['paw'];
-  return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${path}</svg>`;
+function makeIcon(): string {
+  return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${iconPaths['paw']}</svg>`;
+}
+
+function escapeHtml(s: string): string {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
 }
 
 function showResults() {
@@ -333,19 +308,20 @@ function showResults() {
   const subtitle = document.getElementById('results-subtitle')!;
 
   const petLabel = answers.pet === 'cat' ? 'cat' : answers.pet === 'dog' ? 'dog' : 'pets';
-  subtitle.textContent = `Based on your ${petLabel}'s profile, here are our top picks:`;
+  subtitle.textContent = recs.length > 0
+    ? `Based on your ${petLabel}'s profile, here are our top picks:`
+    : 'Check back soon — we\'re still stocking the shelves.';
 
   grid.innerHTML = recs.map(p => `
-    <a href="${p.href}" class="result-card" role="listitem">
+    <a href="/products/${encodeURIComponent(p.slug)}" class="result-card" role="listitem">
       <div class="result-icon-wrap" aria-hidden="true">
-        ${makeIcon(p.icon)}
+        ${p.image ? `<img src="${escapeHtml(p.image)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" />` : makeIcon()}
       </div>
       <div class="result-info">
-        <h3>${p.name}</h3>
-        <p class="result-reason">${p.reason}</p>
+        <h3>${escapeHtml(p.name)}</h3>
+        ${p.description ? `<p class="result-reason">${escapeHtml(p.description.slice(0, 100))}${p.description.length > 100 ? '…' : ''}</p>` : ''}
         <div class="result-footer">
-          <span class="result-price">${p.price}</span>
-          <span class="result-stars" aria-hidden="true">★★★★★</span>
+          <span class="result-price">$${escapeHtml(p.price)}</span>
         </div>
       </div>
       <div class="result-arrow" aria-hidden="true">
