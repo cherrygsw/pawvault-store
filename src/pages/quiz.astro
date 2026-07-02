@@ -250,6 +250,28 @@ function matches(text: string, key?: string): boolean {
   return words.some(w => text.includes(w));
 }
 
+// Species suitability is a hard filter, not a scoring signal: a dog answer
+// must never surface a cat-only product and vice versa. Determined from
+// whole-word mentions of "cat"/"dog" (and their common variants) in each
+// product's own name + description — if a product mentions both species,
+// or neither, it's treated as suitable for either.
+const CAT_WORDS = /\bcats?\b|\bkittens?\b|\bkitty\b/;
+const DOG_WORDS = /\bdogs?\b|\bpupp(?:y|ies)\b|\bcanine\b/;
+
+function speciesOf(text: string): 'cat' | 'dog' | 'both' {
+  const hasCat = CAT_WORDS.test(text);
+  const hasDog = DOG_WORDS.test(text);
+  if (hasCat && !hasDog) return 'cat';
+  if (hasDog && !hasCat) return 'dog';
+  return 'both';
+}
+
+function suitableForPet(p: Product, pet?: string): boolean {
+  if (pet !== 'cat' && pet !== 'dog') return true; // 'both' (or unanswered): no exclusion
+  const species = speciesOf(`${p.name} ${p.description}`.toLowerCase());
+  return species === 'both' || species === pet;
+}
+
 function scoreProduct(p: Product, a: QuizAnswers): number {
   const text = `${p.name} ${p.description}`.toLowerCase();
   let score = 0;
@@ -265,6 +287,7 @@ function getRecommendations(a: QuizAnswers): Product[] {
   // Ties (including all-zero scores, when nothing matched) keep catalog
   // order, so this still returns real products rather than an empty page.
   return catalog
+    .filter(p => suitableForPet(p, a.pet))
     .map(p => ({ product: p, score: scoreProduct(p, a) }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
